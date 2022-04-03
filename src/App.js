@@ -8,7 +8,10 @@ function App() {
     const [title, setTitle] = useState('')
 
     useEffect(() => {
-        fetch('http://localhost:8001/micro-app-1')
+        const url = process.env.NODE_ENV === 'production'
+            ? process.env.REACT_APP_BACKEND_PROD_HOST
+            : process.env.REACT_APP_BACKEND_DEV_HOST
+        fetch(`${url}/micro-app-1`)
             .then(async (response) => {
                 const {title} = await response.json();
                 if (title) {
