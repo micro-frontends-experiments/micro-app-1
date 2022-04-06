@@ -1,6 +1,15 @@
 import {useEffect, useState} from "react";
+import axios from 'axios'
 import logo from './logo.svg';
 import './App.css';
+
+const fetchSettings = {
+    headers : {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+}
 
 function App() {
     console.log('MicroApp1 has rendered')
@@ -11,9 +20,9 @@ function App() {
         const url = process.env.NODE_ENV === 'production'
             ? process.env.REACT_APP_BACKEND_PROD_HOST
             : process.env.REACT_APP_BACKEND_DEV_HOST
-        fetch(`${url}/micro-app-1`)
-            .then(async (response) => {
-                const {title} = await response.json();
+        axios(`${url}/micro-app-1`)
+            .then(({data}) => {
+                const {title} = data;
                 if (title) {
                     setTitle(title)
                 }
