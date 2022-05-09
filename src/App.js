@@ -3,13 +3,11 @@ import axios from 'axios'
 import logo from './logo.svg';
 import './App.css';
 
-const fetchSettings = {
-    headers : {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-
-}
+axios.interceptors.request.use((config) => {
+  // eslint-disable-next-line no-param-reassign
+  config.headers.Authorization = 'My-Token admin-token';
+  return config;
+});
 
 function App() {
     console.log('MicroApp1 has rendered')
