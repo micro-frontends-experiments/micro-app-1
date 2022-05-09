@@ -7,7 +7,7 @@ function App ({ resolvers }) {
   const [notes, setNotes] = useState([])
 
   useEffect(() => {
-    resolvers.getNotes()
+    resolvers.resolveNotes()
       .then((data) => {
         setNotes(data)
       })
@@ -15,16 +15,19 @@ function App ({ resolvers }) {
 
   const onClick = (id) => {
     setNotes(notes => notes.map(note => ({ ...note, isActive: note.id === id })))
+    const clickNoteEvent = new CustomEvent('clickNote', { detail: { id } })
+    window.dispatchEvent(clickNoteEvent)
   }
 
   return (
-      <div className="columns-1 px-4 py-3">
+      <div className="columns-1">
         <ul className="list-inside ">
           {notes.map(({ title, id, isActive }) =>
             <li key={id}
-                className={`cursor-pointer font-medium hover:drop-shadow-md 
-            text-lg border-2 rounded-md px-2 py-1 mb-2 flex justify-between items-center
-            ${isActive ? 'bg-indigo-500' : ''}`}
+                className={`cursor-pointer font-medium hover:drop-shadow-md text-lg
+                            border-2 rounded-md px-2 py-1 mb-2 flex justify-between items-center
+                            ${isActive ? 'bg-indigo-500' : ''}`
+                }
             onClick={() => onClick(id)}>
               {title}
               <button>
