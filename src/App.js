@@ -2,7 +2,7 @@ import './App.css'
 import List from './components/List'
 import Editor from './components/Editor'
 import { useEffect, useState } from 'react'
-import { deleteNote, getNotes, putNote } from './api/endpoints'
+import { addNote, deleteNote, getNotes, putNote } from './api/endpoints'
 import useDebouncedValue from './hooks/useDebouncedValue'
 import isDeepEqual from 'lodash.isequal'
 
@@ -13,6 +13,22 @@ function App ({ userId }) {
   const [openedNote, setOpenedNote] = useState(null)
 
   const debouncedOpenedNote = useDebouncedValue(openedNote, 700)
+
+  const addNewNote = () => {
+    addNote(userId)
+      .then(data => {
+        setNotes(notes => [{ id: data.id }, ...notes])
+        setOpenedNote({ text: '', title: '', id: data.id })
+      })
+  }
+
+  useEffect(() => {
+    window.addEventListener('addButtonClick', addNewNote)
+
+    return () => {
+      window.removeEventListener('addButtonClick', addNewNote)
+    }
+  }, [addNewNote])
 
   useEffect(() => {
     const prevOpenedNoteState = notes.find(n => n.id === openedNote?.id)
@@ -46,7 +62,7 @@ function App ({ userId }) {
   }
 
   return (
-    <div className="flex flex-row mx-auto h-screen px-4 py-4 justify-around">
+    <div className="flex flex-row mx-auto min-h-full px-4 py-4 justify-around">
       <div className="basis-[48%]">
         <List onClickNote={onClickNote} notes={notes} openedNoteId={openedNote?.id} onDeleteNote={onDeleteNote}/>
       </div>

@@ -16,7 +16,7 @@ function Editor ({ openedNote, setOpenedNote }) {
       <textarea
         value={openedNote.text}
         className=
-          "w-full border-2 min-h-full resize-none outline-0
+          "w-full border-2 h-full resize-none outline-0
           px-2 py-1 rounded-md border-neutral-200"
         onChange={onChangeText}
         placeholder={TEXT_PLACEHOLDER}
