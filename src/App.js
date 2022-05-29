@@ -5,20 +5,24 @@ import { useEffect, useState } from 'react'
 import { addNote, deleteNote, getNotes, putNote } from './api/endpoints'
 import useDebouncedValue from './hooks/useDebouncedValue'
 import isDeepEqual from 'lodash.isequal'
+import Loader from './components/Loader'
 
 function App ({ userId }) {
   console.log('MicroApp1 has rendered')
 
   const [notes, setNotes] = useState([])
   const [openedNote, setOpenedNote] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const debouncedOpenedNote = useDebouncedValue(openedNote, 700)
 
   const addNewNote = () => {
+    setIsLoading(true)
     addNote(userId)
       .then(data => {
         setNotes(notes => [{ id: data.id }, ...notes])
         setOpenedNote({ text: '', title: '', id: data.id })
+        setIsLoading(false)
       })
   }
 
@@ -33,6 +37,7 @@ function App ({ userId }) {
   useEffect(() => {
     const prevOpenedNoteState = notes.find(n => n.id === openedNote?.id)
     if (debouncedOpenedNote && !isDeepEqual(prevOpenedNoteState, debouncedOpenedNote)) {
+      setNotes(notes => notes.map(n => n.id === debouncedOpenedNote.id ? debouncedOpenedNote : n))
       putNote(userId, debouncedOpenedNote)
         .then((data) => setNotes(notes => notes.map(n => n.id === data?.id ? data : n)))
     }
@@ -41,8 +46,8 @@ function App ({ userId }) {
   useEffect(() => {
     if (userId) {
       getNotes(userId)
-        .then((data) => {
-          setNotes(data)
+        .then(({ notes }) => {
+          setNotes(notes)
         })
     }
   }, [userId])
@@ -50,15 +55,15 @@ function App ({ userId }) {
   const onClickNote = (id) => setOpenedNote(notes.find(note => note.id === id))
 
   const onDeleteNote = (noteId) => {
+    setNotes(notes => notes.filter(n => n.id !== noteId))
+    if (openedNote?.id === noteId) {
+      setOpenedNote(null)
+    }
     deleteNote(userId, noteId)
-      .then(({ success }) => {
-        if (success) {
-          setNotes(notes => notes.filter(n => n.id !== noteId))
-          if (openedNote.id === noteId) {
-            setOpenedNote(null)
-          }
-        }
-      })
+  }
+
+  if (isLoading) {
+    return <Loader/>
   }
 
   return (

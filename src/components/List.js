@@ -12,7 +12,10 @@ function List ({ onClickNote, notes, openedNoteId, onDeleteNote }) {
               }
               onClick={() => onClickNote(id)}>
             {title || TITLE_STUB}
-            <button onClick={() => onDeleteNote(id)}>
+            <button onClick={(e) => {
+              e.stopPropagation()
+              onDeleteNote(id)
+            }}>
               <svg className="h-5 w-5 text-red-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2"
                    stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z"/>
